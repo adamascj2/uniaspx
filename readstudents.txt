@@ -1,0 +1,40 @@
+<script; language="JavaScript" runat="server">
+function Page_Load(sender:Object, e:EventArgs):void{
+ var msg;
+ msg = readDB();
+ Response.Write(msg); 
+}
+function readDB(){ 
+var select = "SELECT * FROM students";  
+ //The connection
+ var oConn:System.Data.OleDb.OleDbConnection = new System.Data.OleDb.OleDbConnection(); 
+ oConn.ConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + Server.MapPath("/data/croquet101.mdb"); 
+ try{   
+  oConn.Open(); 
+  //The DataSet creation
+  var ds:System.Data.DataSet  = new System.Data.DataSet(); 
+  var datadapt:System.Data.OleDb.OleDbDataAdapter = new System.Data.OleDb.OleDbDataAdapter(select, oConn); 
+  datadapt.Fill(ds, "stu"); 
+  var dsT:System.Data.DataSet  = new System.Data.DataSet();
+  dsT = ds; 
+  var list = new String("");
+  var pad : char = " ";
+  for(var i=0; i<dsT.Tables;["stu"].Rows.Count; i++){
+ list = list + dsT.Tables["stu"].Rows[i]["country"].ToString().Replace("_"," ").PadRight(20, pad) + ":"
+            +  dsT.Tables["stu"].Rows[i]["name"].ToString().Replace("_"," ")  + "#";
+  //All this needs to be in one line, please!
+ }
+ //To erase the last separator - we don't need it:
+ list=list.slice(0,list.lastIndexOf("#"));
+ return list;
+}
+ catch(e:Exception) {
+  //Write the error, if we have one
+  return "Error: "+  e.ToString();
+ }
+ finally{
+  //having error or not we close the connection, a good pratice
+  oConn.Close();
+ }
+}
+</script>
